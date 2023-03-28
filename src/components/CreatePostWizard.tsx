@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import React, { useState } from "react";
 import { api } from "~/utils/api";
@@ -43,6 +43,9 @@ const CreatePostWizard = () => {
         disabled={isPosting}
       >
         Submit
+      </button>
+      <button className="mr-2 mb-2 rounded-lg bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-br focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:focus:ring-cyan-800">
+        <SignOutButton />
       </button>
     </div>
   );

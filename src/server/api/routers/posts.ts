@@ -8,7 +8,7 @@ const filterUserForClient = (user : User) => {
   let name = (user.firstName === null ? "" : user.firstName ) 
   if(user.username != null)
     name = user.username
-  name = "@" + name
+  name = name
     return {
     id : user.id,
     username : name,
