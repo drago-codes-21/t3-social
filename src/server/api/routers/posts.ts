@@ -5,11 +5,10 @@ import { z } from "zod";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 
 const filterUserForClient = (user : User) => {
-  let name = (user.firstName === null ? "" : user.firstName + " ") + 
-  (user.lastName === null ? "" : user.lastName)
+  let name = (user.firstName === null ? "" : user.firstName ) 
   if(user.username != null)
     name = user.username
-
+  name = "@" + name
     return {
     id : user.id,
     username : name,

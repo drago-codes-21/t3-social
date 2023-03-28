@@ -3,6 +3,7 @@ import React from "react";
 import type { RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Link from "next/link";
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 dayjs.extend(relativeTime);
@@ -20,12 +21,16 @@ const PostView = (props: PostWithUser) => {
       />
       <div className="flex flex-col">
         <div className="gap-3 text-sm font-bold text-slate-300">
-          <span>@{author.username}</span>
+          <Link href={`${author.username}`}>
+            <span>{author.username}</span>
+          </Link>
           <span className="font-thin">{` . ${dayjs(
             post.createdAt
           ).fromNow()}`}</span>
         </div>
-        <span>{post.content}</span>
+        <Link href={`/post/${post.id}`}>
+          <span>{post.content}</span>
+        </Link>
       </div>
     </div>
   );
