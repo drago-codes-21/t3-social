@@ -14,7 +14,7 @@ const PostView = (props: PostWithUser) => {
       <Image
         src={author.profileImageUrl}
         alt="Profile image"
-        className="h-14 w-14 rounded-full"
+        className="h-14 w-14 rounded-full object-cover"
         width={30}
         height={30}
       />
