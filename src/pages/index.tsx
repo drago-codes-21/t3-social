@@ -3,6 +3,7 @@ import Head from "next/head";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import CreatePostWizard from "~/components/CreatePostWizard";
+import PostView from "~/components/PostView";
 
 const Home: NextPage = () => {
   const user = useUser();
@@ -10,6 +11,7 @@ const Home: NextPage = () => {
   const { data, isLoading } = api.posts.getAll.useQuery();
   if (isLoading) return <div>Loading...</div>;
   if (!data) return <div>Something went wrong</div>;
+  // console.log(user.user);
   return (
     <>
       <Head>
@@ -28,14 +30,9 @@ const Home: NextPage = () => {
             {isSignedIn && <CreatePostWizard />}
           </div>
           <div className="flex flex-col">
-            {data &&
-              data.map((post) => {
-                return (
-                  <div key={post.id} className="border-b border-slate-400 p-8">
-                    {post.content}
-                  </div>
-                );
-              })}
+            {data?.map((fullPost) => {
+              return <PostView key={fullPost.post?.id} {...fullPost} />;
+            })}
           </div>
         </div>
       </main>
