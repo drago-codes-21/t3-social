@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import { Toaster } from "react-hot-toast";
 
 const roboto = Roboto({
   weight: "400",
@@ -14,6 +15,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider>
       <main className={roboto.className}>
+        <Toaster position="bottom-center" />
         <Component {...pageProps} />
       </main>
     </ClerkProvider>

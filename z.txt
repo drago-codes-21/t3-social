@@ -1,0 +1,1 @@
+after this tut add stars in prisma so we can make list based on that stars and mention them in profile as well
