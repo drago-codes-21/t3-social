@@ -3,6 +3,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
+import type{post} from '@prisma/client'
 
 const filterUserForClient = (user : User) => {
   let name = (user.firstName === null ? "" : user.firstName ) 
@@ -25,7 +26,39 @@ const ratelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(5, "1 m"),
   analytics: true
 });
+const addUserDataToPosts = async (posts: post[]) => {
+  const userId = posts.map((post) => post.authorId);
+  const users = (
+    await clerkClient.users.getUserList({
+      userId: userId,
+      limit: 110,
+    })
+  ).map(filterUserForClient);
 
+  return posts.map((post) => {
+
+    const author = users.find((user) => user.id === post.authorId);
+
+    if (!author) {
+      console.error("AUTHOR NOT FOUND", post);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Author for post not found. POST ID: ${post.id}, USER ID: ${post.authorId}`,
+      });
+    }
+    if (!author.username) {
+      // user the ExternalUsername
+      author.username = author.id;
+    }
+    return {
+      post,
+      author: {
+        ...author,
+        username: author.username ?? "(username not found)",
+      },
+    };
+  });
+};
 export const postsRouter = createTRPCRouter({
  
   getAll: publicProcedure.query(async({ ctx }) => {
@@ -52,14 +85,27 @@ export const postsRouter = createTRPCRouter({
       
       return {
         post,
-        author : {
-          ...author,
-          username : author.username
-        }
+        author
       };
     });
   }),
-  
+  getPostsByUserId: publicProcedure
+  .input(
+    z.object({
+      userId: z.string(),
+    })
+  )
+  .query(({ ctx, input }) =>
+    ctx.prisma.post
+      .findMany({
+        where: {
+          authorId: input.userId,
+        },
+        take: 100,
+        orderBy: [{ createdAt: "desc" }],
+      })
+      .then(addUserDataToPosts)
+  ), 
   create: privateProcedure.input(z.object({
     content : z.string().min(1).max(280)
   })).mutation(async({ctx, input}) => {
